@@ -18,8 +18,9 @@ namespace JsonAnalyzer
 		{
 			CommandAddChar = new RelayCommand(AddChar, "");
 
-			//settings = Saves.FromSave(Properties.Settings.Default.ResourceString);
-			//SelectedCharName = settings.Selected;
+			settings = Saves.FromSave(Properties.Settings.Default.ResourceString);
+			AllChars = settings.GetCharCollection();
+			SelectedCharName = settings.Selected;
 			foreach(Char c in AllChars)
 			{
 				if (c.Name == SelectedCharName)
@@ -106,15 +107,18 @@ namespace JsonAnalyzer
 						if (Armor != null)
 							break;
 					}
-					foreach (JProperty prop in Armor.First.Children())
+					if (Armor != null)
 					{
-						if (prop.Name == "enc")
+						foreach (JProperty prop in Armor.First.Children())
 						{
-							charToAdd.Enc.Current = (int)prop.Value;
-						}
-						else if (prop.Name == "pro")
-						{
-							charToAdd.Arm.Current = (int)prop.Value;
+							if (prop.Name == "enc")
+							{
+								charToAdd.Enc.Current = (int)prop.Value;
+							}
+							else if (prop.Name == "pro")
+							{
+								charToAdd.Arm.Current = (int)prop.Value;
+							}
 						}
 					}
 				}
@@ -122,6 +126,7 @@ namespace JsonAnalyzer
 				{
 					foreach(JProperty coin in bel.First.Children())
 					{
+						if(coin.Value.ToString() != String.Empty)
 						switch(coin.Name)
 						{
 							case "d":
@@ -144,15 +149,14 @@ namespace JsonAnalyzer
 
 		public void DoClosingStuff(object sender, System.ComponentModel.CancelEventArgs e)
 		{
-			//settings.Char = AllChars.ToList();
-			//settings.Selected = SelectedCharName;
+			settings.Char = AllChars.ToList();
+			settings.Selected = SelectedCharName;
 
-			//settings.ToSave(settings);
+			settings.ToSave(settings);
 		}
 
 
-		//public Saves settings;
-		private string savepath = "saves.xml";
+		public Saves settings = new Saves();
 
 		public bool TopMost { get => topMost; set => SetAndNotify(ref topMost, value); }
 		private bool topMost = false;
