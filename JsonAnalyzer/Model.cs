@@ -18,7 +18,8 @@ namespace JsonAnalyzer
 		{
 			CommandAddChar = new RelayCommand(AddChar, "");
 
-			settings = Saves.FromSave(Properties.Settings.Default.ResourceString);
+			Properties.Settings.Default.Upgrade();
+			settings = Saves.FromSave(Properties.Settings.Default.SavedResource);
 			AllChars = settings.GetCharCollection();
 			SelectedCharName = settings.Selected;
 			foreach(Char c in AllChars)

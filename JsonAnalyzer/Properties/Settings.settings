@@ -2,7 +2,7 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="JsonAnalyzer.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="ResourceString" Roaming="true" Type="System.String" Scope="User">
+    <Setting Name="SavedResource" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">&lt;saves selected=""&gt;
     
 &lt;/saves&gt;</Value>

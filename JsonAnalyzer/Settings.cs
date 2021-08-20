@@ -126,8 +126,10 @@ namespace JsonAnalyzer
                 serializer.Serialize(writer, settings);
             }
 
-            Properties.Settings.Default.ResourceString = sb.ToString();
+            Properties.Settings.Default.SavedResource = sb.ToString();
             Properties.Settings.Default.Save();
+            Properties.Settings.Default.Upgrade();
+            string s = Properties.Settings.Default.SavedResource;
         }
 
         public static Saves FromSave(string objectData)
