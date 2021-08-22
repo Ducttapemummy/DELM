@@ -9,6 +9,16 @@ using System.Xml.Serialization;
 
 namespace JsonAnalyzer
 {
+
+    [XmlRoot(ElementName = "attributes")]
+    public class Attributes
+    {
+        [XmlAttribute(AttributeName = "id")]
+        public AttributeID ID { get; set; }
+        [XmlAttribute(AttributeName = "value")]
+        public int Value { get; set; } = 8;
+
+    }
     [XmlRoot(ElementName = "lep")]
     public class Lep
     {
@@ -73,6 +83,10 @@ namespace JsonAnalyzer
     [XmlRoot(ElementName = "char")]
     public class Char
     {
+        [XmlElement(ElementName = "attributes")]
+        public List<Attributes> Attributes { get; set; } = new List<Attributes>();
+        [XmlElement(ElementName = "race")]
+        public Race Race { get; set; } = new Race();
         [XmlElement(ElementName = "hp")]
         public Lep Lep { get; set; } = new Lep();
         [XmlElement(ElementName = "asp")]

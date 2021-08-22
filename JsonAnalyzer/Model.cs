@@ -34,6 +34,7 @@ namespace JsonAnalyzer
 		private void AddChar(object obj)
 		{
 			Char CharToAdd = new Char();
+			List<Char> ToDelete = new List<Char>();
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			openFileDialog.Filter = "json Files (*.json)|*.json|All files (*.*)|*.*";
 			if (openFileDialog.ShowDialog() == true)
@@ -46,8 +47,14 @@ namespace JsonAnalyzer
 						case "name":
 							CharToAdd.Name = (string)child.Value;
 							break;
+						case "r":
+
+							break;
 						case "attr":
 							AttributesToChar(child, CharToAdd);
+							break;
+						case "activatable":
+							ActivatablesToChar(child, CharToAdd);
 							break;
 						case "belongings":
 							ItemsToChar(child, CharToAdd);
@@ -55,17 +62,22 @@ namespace JsonAnalyzer
 					}
 				}
 				foreach(Char c in AllChars)
-				{	//if already exists it is overwritten
-					if (CharToAdd.Name == c.Name) AllChars.Remove(c);
+				{   //if already exists it is overwritten
+					if (CharToAdd.Name == c.Name) ToDelete.Add(c);
 				}
+				foreach(Char Delete in ToDelete)
+                {
+					AllChars.Remove(Delete);
+                }
+
 				AllChars.Add(CharToAdd);
 				SelectedChar = CharToAdd;
 			}
 		}
 
-		internal void CharSelectionChanged()
+        internal void CharSelectionChanged()
 		{
-			SelectedCharName = SelectedChar.Name;
+			SelectedCharName = SelectedChar == null ? "":SelectedChar.Name ;
 		}
 
 		private void AttributesToChar(JProperty child, Char charToAdd)
@@ -74,18 +86,88 @@ namespace JsonAnalyzer
 			{
 				switch(prop.Name)
 				{
+					case "values":
+						GetAttributevalues(prop, charToAdd);
+						break;
 					case "ae":
-						charToAdd.Asp.Max = (int)prop.Value;
+						charToAdd.Asp.Max += (int)prop.Value;
 						break;
 					case "kp":
-						charToAdd.Kap.Max = (int)prop.Value;
+						charToAdd.Kap.Max += (int)prop.Value;
 						break;
 					case "lp":
-						charToAdd.Lep.Max = (int)prop.Value;
+						charToAdd.Lep.Max += (int)prop.Value;
 						break;
 
 				}
 			}
+		}
+
+        private void GetAttributevalues(JProperty jprop, Char charToAdd)
+        {
+            foreach(JObject obj in jprop.First.Children())
+            {
+				switch(obj["id"].ToString())
+                {
+					case "ATTR_1":
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.MU, Value = (int)obj["value"] });
+						break;
+					case "ATTR_2":
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.KL, Value = (int)obj["value"] });
+						break;
+					case "ATTR_3":
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.IN, Value = (int)obj["value"] });
+						break;
+					case "ATTR_4":
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.CH, Value = (int)obj["value"] });
+						break;
+					case "ATTR_5":
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.FF, Value = (int)obj["value"] });
+						break;
+					case "ATTR_6":
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.GE, Value = (int)obj["value"] });
+						break;
+					case "ATTR_7":
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.KO, Value = (int)obj["value"] });
+						charToAdd.Lep.Max += ((int)obj["value"]) * 2;	//Life
+						break;
+					case "ATTR_8":
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.KK, Value = (int)obj["value"] });
+						break;
+				}
+            }
+		}
+
+		private void ActivatablesToChar(JProperty jprop, Char charToAdd)
+		{
+			foreach(JProperty activatable in jprop.First.Children())
+            {
+				try
+				{
+					switch (activatable.Name)
+					{
+						case "ADV_23":  //High ASP
+							charToAdd.Asp.Max += Convert.ToInt32(((JValue)activatable.First.First.First.First).Value);
+							break;
+						case "ADV_24":  //High KAP
+							charToAdd.Kap.Max += Convert.ToInt32(((JValue)activatable.First.First.First.First).Value);
+							break;
+						case "ADV_25":  //High LEP
+							charToAdd.Lep.Max += Convert.ToInt32(((JValue)activatable.First.First.First.First).Value);
+							break;
+						case "DISADV_26":  //Low ASP
+							charToAdd.Asp.Max -= Convert.ToInt32(((JValue)activatable.First.First.First.First).Value);
+							break;
+						case "DISADV_27":  //Low KAP
+							charToAdd.Kap.Max -= Convert.ToInt32(((JValue)activatable.First.First.First.First).Value);
+							break;
+						case "DISADV_28":  //Low LEP
+							charToAdd.Lep.Max -= Convert.ToInt32(((JValue)activatable.First.First.First.First).Value);
+							break;
+					}
+				}
+				catch(Exception e) { }
+            }
 		}
 
 		private void ItemsToChar(JProperty belongings, Char charToAdd)
@@ -172,5 +254,26 @@ namespace JsonAnalyzer
 		private ObservableCollection<Char> allChars = new ObservableCollection<Char>();
 
 		public RelayCommand CommandAddChar {get; set;}
+
+		
+	}
+	public enum Race
+	{
+		Human,		//Le = 5 //1
+		Elf,		//Le = 2 //2
+		Half_Elf,	//Le = 5 //3
+		Dwarf		//Le = 8 //4
+	}
+
+	public enum AttributeID
+	{
+		MU = 1,
+		KL = 2,
+		IN = 3,
+		CH = 4,
+		FF = 5,
+		GE = 6,
+		KO = 7,
+		KK = 8
 	}
 }
