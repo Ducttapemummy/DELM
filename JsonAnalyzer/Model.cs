@@ -61,6 +61,12 @@ namespace JsonAnalyzer
 							break;
 					}
 				}
+				if(CharToAdd.IsHoly)
+					GetKAP(CharToAdd)
+
+
+
+
 				foreach(Char c in AllChars)
 				{   //if already exists it is overwritten
 					if (CharToAdd.Name == c.Name) ToDelete.Add(c);
@@ -164,6 +170,12 @@ namespace JsonAnalyzer
 						case "DISADV_28":  //Low LEP
 							charToAdd.Lep.Max -= Convert.ToInt32(((JValue)activatable.First.First.First.First).Value);
 							break;
+						case "ADV_12":  //Holy
+							charToAdd.IsHoly = true;
+							break;
+						case "ADV_50":  //Magic
+							charToAdd.IsMagic = true;
+							break;
 					}
 				}
 				catch(Exception e) { }
@@ -255,7 +267,6 @@ namespace JsonAnalyzer
 
 		public RelayCommand CommandAddChar {get; set;}
 
-		
 	}
 	public enum Race
 	{

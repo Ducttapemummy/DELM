@@ -101,6 +101,10 @@ namespace JsonAnalyzer
         public Mon Mon { get; set; } = new Mon();
         [XmlElement(ElementName = "pai")]
         public Pai Pai { get; set; } = new Pai();
+        [XmlAttribute(AttributeName = "isMagic")]
+        public bool IsMagic { get; set; } = false;
+        [XmlAttribute(AttributeName = "isHoly")]
+        public bool IsHoly { get; set; } = false;
         [XmlAttribute(AttributeName = "name")]
         public string Name { get; set; } = "";
         public override string ToString()
