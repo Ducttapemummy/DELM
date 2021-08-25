@@ -3,9 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="SavedResource" Roaming="true" Type="System.String" Scope="User">
-      <Value Profile="(Default)">&lt;saves selected=""&gt;
-    
-&lt;/saves&gt;</Value>
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

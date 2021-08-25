@@ -19,6 +19,7 @@ namespace JsonAnalyzer
     public class Lep
     {
         public int Max { get; set; } = 0;
+        public int Min { get; set; } = 0;
         public int Current { get; set; } = 0;
     }
 
@@ -60,7 +61,7 @@ namespace JsonAnalyzer
     public class Char
     {
         public List<Attributes> Attributes { get; set; } = new List<Attributes>();
-        public Race Race { get; set; } = new Race();
+        public Race Race { get; set; }
         public int Profession { get; set; }
         public Lep Lep { get; set; } = new Lep();
         public Asp Asp { get; set; } = new Asp();
@@ -81,7 +82,7 @@ namespace JsonAnalyzer
 
     public class Saves
     {
-        public List<Char> Char { get; set; }
+        public List<Char> Char { get; set; } = new List<Char>();
         public string Selected { get; set; }
 
 
@@ -105,8 +106,14 @@ namespace JsonAnalyzer
 
         public static Saves FromSave()
         {
-
-            return JsonConvert.DeserializeObject<Saves>(Properties.Settings.Default.SavedResource);
+            Saves Save;
+            if(Properties.Settings.Default.SavedResource =="")
+            {
+                Save = new Saves();
+            }
+            else
+                Save = JsonConvert.DeserializeObject<Saves>(Properties.Settings.Default.SavedResource);
+            return Save; 
         }
     }
 }

@@ -6,12 +6,12 @@
 		xmlns:sync="http://schemas.syncfusion.com/wpf"
         xmlns:local="clr-namespace:JsonAnalyzer"
         mc:Ignorable="d"
-        Title="JsonAnalyzer" MinHeight="300" MinWidth="500" Topmost="{Binding TopMost}" SizeToContent="WidthAndHeight">
+        Title="DSA Easy Management" MinHeight="215" MinWidth="500" Topmost="{Binding TopMost}" SizeToContent="WidthAndHeight">
 	<Window.Resources>
 		<local:ArmorConverter x:Key="ArmorConverter"/>
-		<local:EncumbConverter x:Key="EncumbConverter"/>
-	</Window.Resources>
-	<Grid>
+        <local:EncumbConverter x:Key="EncumbConverter"/>
+    </Window.Resources>
+	<Grid Background="{Binding WindowBackColor}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
@@ -19,8 +19,11 @@
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Horizontal">
 			<ComboBox ItemsSource="{Binding AllChars}" SelectedItem="{Binding SelectedChar}" Text="{Binding SelectedChar.Name}" Width="300" HorizontalAlignment="Left" Margin="5" SelectionChanged="CharBox_SelectionChanged"/>
-			<Button Margin="5" Width="50" Content="+ Add" Command="{Binding CommandAddChar}"/>
-		</StackPanel>
+            <Button Margin="5" Width="50" Content="+ Add" Command="{Binding CommandAddChar}"/>
+            <Button Margin="5" Height="Auto" Width="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}}" Command="{Binding CommandDeleteChar}">
+                <Image Source="Icons/trash.png"/>
+            </Button>
+        </StackPanel>
 		<CheckBox Content="On Top"  IsChecked="{Binding TopMost}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"/>
 		<GroupBox Grid.Row="1" Header="Char" Margin="5">
 			<Grid>
@@ -36,17 +39,17 @@
 				</Grid.RowDefinitions>
 				<StackPanel>
 					<TextBlock Text="LeP" TextAlignment="Center" Width="50" Margin="5"/>
-					<sync:UpDown Step="1" Width="50" NumberDecimalDigits="0" Margin="5" Value="{Binding SelectedChar.Lep.Current}" ZeroColor="Red"/>
+					<sync:UpDown Step="1" Width="50" NumberDecimalDigits="0" Margin="5" Value="{Binding SelectedChar.Lep.Current}" ZeroColor="Red" MinValue="{Binding SelectedChar.Lep.Min}"/>
 					<TextBox IsReadOnly="True" TextAlignment="Center" Width="50" Margin="5" Text="{Binding SelectedChar.Lep.Max}"/>
 				</StackPanel>
 				<StackPanel Grid.Column="1">
 					<TextBlock Text="AsP" TextAlignment="Center" Width="50" Margin="5"/>
-					<sync:UpDown Step="1" Width="50" NumberDecimalDigits="0" Margin="5" Value="{Binding SelectedChar.Asp.Current}" ZeroColor="Red"/>
+					<sync:UpDown Step="1" Width="50" NumberDecimalDigits="0" Margin="5" Value="{Binding SelectedChar.Asp.Current}" ZeroColor="Red"  MinValue="0" />
 					<TextBox IsReadOnly="True" TextAlignment="Center" Width="50" Margin="5" Text="{Binding SelectedChar.Asp.Max}"/>
 				</StackPanel>
 				<StackPanel Grid.Column="2">
 					<TextBlock Text="KaP" TextAlignment="Center" Width="50" Margin="5"/>
-					<sync:UpDown Step="1" Width="50" NumberDecimalDigits="0" Margin="5" Value="{Binding SelectedChar.Kap.Current}" ZeroColor="Red"/>
+					<sync:UpDown Step="1" Width="50" NumberDecimalDigits="0" Margin="5" Value="{Binding SelectedChar.Kap.Current}" ZeroColor="Red" MinValue="0"/>
 					<TextBox IsReadOnly="True" TextAlignment="Center" Width="50" Margin="5" Text="{Binding SelectedChar.Kap.Max}"/>
 				</StackPanel>
 				<TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding SelectedChar.Pai.Current}" TextAlignment="Center" Margin="5"/>
@@ -61,25 +64,22 @@
 					</Grid.RowDefinitions>
 					<StackPanel Grid.Row="0" HorizontalAlignment="Center" Width="Auto" Orientation="Horizontal">
 						<TextBlock Text="D:" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-						<sync:UpDown Step="1" NumberDecimalDigits="0" Margin="2" Value="{Binding SelectedChar.Mon.D}" Width="50" ApplyZeroColor="False"/>
+                        <sync:UpDown Step="1" NumberDecimalDigits="0" Margin="2" Value="{Binding SelectedChar.Mon.D}" Width="50" ApplyZeroColor="False" MinValue="0"/>
 					</StackPanel>
 					<StackPanel Grid.Row="1" HorizontalAlignment="Center" Width="Auto" Orientation="Horizontal">
 						<TextBlock Text="S:" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-						<sync:UpDown Step="1" NumberDecimalDigits="0" Margin="2" Value="{Binding SelectedChar.Mon.S}" Width="50" ApplyZeroColor="False"/>
+                        <sync:UpDown Step="1" NumberDecimalDigits="0" Margin="2" Value="{Binding SelectedChar.Mon.S}" Width="50" ApplyZeroColor="False" MinValue="0" MaxValue="9"/>
 					</StackPanel>
 					<StackPanel Grid.Row="2" HorizontalAlignment="Center" Width="Auto" Orientation="Horizontal">
 						<TextBlock Text="H:" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-						<sync:UpDown Step="1" NumberDecimalDigits="0" Margin="2" Value="{Binding SelectedChar.Mon.H}" Width="50" ApplyZeroColor="False"/>
+                        <sync:UpDown Step="1" NumberDecimalDigits="0" Margin="2" Value="{Binding SelectedChar.Mon.H}" Width="50" ApplyZeroColor="False" MinValue="0" MaxValue="9"/>
 					</StackPanel>
 					<StackPanel Grid.Row="3" HorizontalAlignment="Center" Width="Auto" Orientation="Horizontal">
 						<TextBlock Text="K:" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-						<sync:UpDown Step="1" NumberDecimalDigits="0" Margin="2" Value="{Binding SelectedChar.Mon.K}" Width="50" ApplyZeroColor="False"/>
+                        <sync:UpDown Step="1" NumberDecimalDigits="0" Margin="2" Value="{Binding SelectedChar.Mon.K}" Width="50" ApplyZeroColor="False" MinValue="0" MaxValue="9"/>
 					</StackPanel>
 				</Grid>
 			</Grid>
-		</GroupBox>
-		<GroupBox Grid.Row="2" Header="Dice" Margin="5">
-
 		</GroupBox>
 	</Grid>
 </Window>

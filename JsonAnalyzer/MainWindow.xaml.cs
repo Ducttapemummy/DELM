@@ -32,5 +32,5 @@ namespace JsonAnalyzer
 		{
 			_model.CharSelectionChanged();
 		}
-	}
+    }
 }

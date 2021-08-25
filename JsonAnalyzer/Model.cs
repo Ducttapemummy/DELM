@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace JsonAnalyzer
@@ -17,6 +18,7 @@ namespace JsonAnalyzer
 		public Model()
 		{
 			CommandAddChar = new RelayCommand(AddChar, "");
+			CommandDeleteChar = new RelayCommand(DeleteChar, "", CanDeleteChar);
 
 			Properties.Settings.Default.Upgrade();
 			settings = Saves.FromSave();
@@ -31,7 +33,23 @@ namespace JsonAnalyzer
 				SelectedChar = AllChars.FirstOrDefault();
 		}
 
-		private void AddChar(object obj)
+        private bool CanDeleteChar(object obj)
+        {
+			return SelectedChar != null;
+        }
+
+        private void DeleteChar(object obj)
+        {
+			if (MessageBox.Show("Are you sure?", "Delete Character", MessageBoxButton.YesNo,MessageBoxImage.Question) == MessageBoxResult.Yes)
+			{
+				AllChars.Remove(SelectedChar);
+				settings.ToSave();
+				SelectedChar = AllChars.FirstOrDefault();
+			}
+
+        }
+
+        private void AddChar(object obj)
 		{
 			Char CharToAdd = new Char();
 			List<Char> ToDelete = new List<Char>();
@@ -48,7 +66,8 @@ namespace JsonAnalyzer
 							CharToAdd.Name = (string)child.Value;
 							break;
 						case "r":
-							CharToAdd.Race = (Race)(int)child.Value;
+							CharToAdd.Race = (Race)Convert.ToInt32(child.Value.ToString().Trim('R','_'));
+							GetRaceLep(CharToAdd);
 							break;
 						case "attr":
 							AttributesToChar(child, CharToAdd);
@@ -61,11 +80,13 @@ namespace JsonAnalyzer
 							break;
 					}
 				}
+				CharToAdd.Asp.Current = CharToAdd.Asp.Max;
+				CharToAdd.Kap.Current = CharToAdd.Kap.Max;
+				CharToAdd.Lep.Current = CharToAdd.Lep.Max;
 
 
 
-
-				foreach(Char c in AllChars)
+				foreach (Char c in AllChars)
 				{   //if already exists it is overwritten
 					if (CharToAdd.Name == c.Name) ToDelete.Add(c);
 				}
@@ -79,7 +100,7 @@ namespace JsonAnalyzer
 			}
 		}
 
-		internal void CharSelectionChanged()
+        internal void CharSelectionChanged()
 		{
 			SelectedCharName = SelectedChar == null ? "":SelectedChar.Name ;
 		}
@@ -133,7 +154,8 @@ namespace JsonAnalyzer
 						break;
 					case "ATTR_7":
 						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.KO, Value = (int)obj["value"] });
-						charToAdd.Lep.Max += ((int)obj["value"]) * 2;	//Life
+						charToAdd.Lep.Max += ((int)obj["value"]) * 2;   //Life
+						charToAdd.Lep.Min -= ((int)obj["value"]);		//Min. life  = -KO
 						break;
 					case "ATTR_8":
 						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.KK, Value = (int)obj["value"] });
@@ -169,9 +191,11 @@ namespace JsonAnalyzer
 							charToAdd.Lep.Max -= Convert.ToInt32(((JValue)activatable.First.First.First.First).Value);
 							break;
 						case "ADV_12":  //Holy
+							charToAdd.Kap.Max += 20;
 							charToAdd.IsHoly = true;
 							break;
 						case "ADV_50":  //Magic
+							charToAdd.Asp.Max += 20;
 							charToAdd.IsMagic = true;
 							break;
 						default:
@@ -183,12 +207,21 @@ namespace JsonAnalyzer
             }
 		}
 
-		private void GetAspAndKap(Char charToAdd)
+		private void GetRaceLep(Char charToAdd)
 		{
-			if (charToAdd.IsHoly)
-				charToAdd.Kap.Max += charToAdd.Attributes.Find((a) => a.ID == AttributeID.MU).Value;
-			if (charToAdd.IsMagic)
-				charToAdd.Asp.Max += charToAdd.Attributes.Find((a) => a.ID == AttributeID.MU).Value;
+			switch(charToAdd.Race)
+            {
+				case Race.Elf:
+					charToAdd.Lep.Max += 2;
+					break;
+				case Race.Half_Elf:
+				case Race.Human:
+					charToAdd.Lep.Max += 5;
+					break;
+				case Race.Dwarf:
+					charToAdd.Lep.Max += 8;
+					break;
+            }
 		}
 
 		private void TryForTradition(Char charToAdd,JProperty activatable)
@@ -368,15 +401,19 @@ namespace JsonAnalyzer
 		public ObservableCollection<Char> AllChars { get => allChars; set => SetAndNotify(ref allChars, value); }
 		private ObservableCollection<Char> allChars = new ObservableCollection<Char>();
 
-		public RelayCommand CommandAddChar {get; set;}
+		public RelayCommand CommandAddChar {get; set; }
+		public RelayCommand CommandDeleteChar { get; set; }
+
+		public Brush WindowBackColor { get => windowBackcolor; set => SetAndNotify(ref windowBackcolor, value); }
+		private Brush windowBackcolor = Brushes.DarkGray;
 
 	}
 	public enum Race
 	{
-		Human,		//Le = 5 //1
-		Elf,		//Le = 2 //2
-		Half_Elf,	//Le = 5 //3
-		Dwarf		//Le = 8 //4
+		Human = 1,		//Le = 5 //1
+		Elf = 2,		//Le = 2 //2
+		Half_Elf = 3,	//Le = 5 //3
+		Dwarf = 4		//Le = 8 //4
 	}
 
 	public enum AttributeID
