@@ -19,7 +19,7 @@ namespace JsonAnalyzer
 			CommandAddChar = new RelayCommand(AddChar, "");
 
 			Properties.Settings.Default.Upgrade();
-			settings = Saves.FromSave(Properties.Settings.Default.SavedResource);
+			settings = Saves.FromSave();
 			AllChars = settings.GetCharCollection();
 			SelectedCharName = settings.Selected;
 			foreach(Char c in AllChars)
@@ -48,7 +48,7 @@ namespace JsonAnalyzer
 							CharToAdd.Name = (string)child.Value;
 							break;
 						case "r":
-
+							CharToAdd.Race = (Race)(int)child.Value;
 							break;
 						case "attr":
 							AttributesToChar(child, CharToAdd);
@@ -61,8 +61,6 @@ namespace JsonAnalyzer
 							break;
 					}
 				}
-				if(CharToAdd.IsHoly)
-					GetKAP(CharToAdd)
 
 
 
@@ -81,7 +79,7 @@ namespace JsonAnalyzer
 			}
 		}
 
-        internal void CharSelectionChanged()
+		internal void CharSelectionChanged()
 		{
 			SelectedCharName = SelectedChar == null ? "":SelectedChar.Name ;
 		}
@@ -176,10 +174,115 @@ namespace JsonAnalyzer
 						case "ADV_50":  //Magic
 							charToAdd.IsMagic = true;
 							break;
+						default:
+							TryForTradition(charToAdd, activatable);
+							break;
 					}
 				}
 				catch(Exception e) { }
             }
+		}
+
+		private void GetAspAndKap(Char charToAdd)
+		{
+			if (charToAdd.IsHoly)
+				charToAdd.Kap.Max += charToAdd.Attributes.Find((a) => a.ID == AttributeID.MU).Value;
+			if (charToAdd.IsMagic)
+				charToAdd.Asp.Max += charToAdd.Attributes.Find((a) => a.ID == AttributeID.MU).Value;
+		}
+
+		private void TryForTradition(Char charToAdd,JProperty activatable)
+		{
+			switch(activatable.Name)
+			{
+				//Magic, KL
+				case "SA_70":
+				case "SA_346":
+				case "SA_681":
+					charToAdd.Asp.Max += charToAdd.Attributes.Find((a) => a.ID == AttributeID.KL).Value;
+					break;
+				//Magic, KL/2, Round Up
+				case "SA_750":
+					charToAdd.Asp.Max += (int)Math.Ceiling(charToAdd.Attributes.Find((a) => a.ID == AttributeID.KL).Value/2.0);
+					break;
+				//Magic, IN
+				case "SA_345":
+					charToAdd.Asp.Max += charToAdd.Attributes.Find((a) => a.ID == AttributeID.IN).Value;
+					break;
+				//Magic, CH
+				case "SA_255":
+				case "SA_676":
+					charToAdd.Asp.Max += charToAdd.Attributes.Find((a) => a.ID == AttributeID.CH).Value;
+					break;
+				//Magic, CH/2, Round Up
+				case "SA_677":
+					charToAdd.Asp.Max += (int)Math.Ceiling(charToAdd.Attributes.Find((a) => a.ID == AttributeID.CH).Value / 2.0);
+					break;
+				//Holy, MU
+				case "SA_682":
+				case "SA_683":
+				case "SA_689":
+				case "SA_693":
+				case "SA_696":
+				case "SA_698":
+					charToAdd.Kap.Max += charToAdd.Attributes.Find((a) => a.ID == AttributeID.MU).Value;
+					break;
+				//Holy, KL
+				case "SA_86":
+				case "SA_684":
+				case "SA_688":
+				case "SA_697":
+				case "SA_1049":
+					charToAdd.Kap.Max += charToAdd.Attributes.Find((a) => a.ID == AttributeID.KL).Value;
+					break;
+				//Holy, IN
+				case "SA_685":
+				case "SA_686":
+				case "SA_691":
+				case "SA_694":
+					charToAdd.Kap.Max += charToAdd.Attributes.Find((a) => a.ID == AttributeID.IN).Value;
+					break;
+				//Holy, CH
+				case "SA_687":
+				case "SA_692":
+				case "SA_695":
+				case "SA_690":
+					charToAdd.Kap.Max += charToAdd.Attributes.Find((a) => a.ID == AttributeID.CH).Value;
+					break;
+			}
+			/*Magic:
+			SA_70 = Gildenmagier, KL
+			SA_346 = Druiden, KL
+			SA_681 = Qabalyamagier, KL
+			SA_750 = Zauberalchemist, KL/2
+			SA_345 = Elfen, IN
+			SA_255 = Hexen, CH
+			SA_676 = Scharlatan, CH
+			SA_677 = Zauberbarde, CH/2
+			SA_679 = Intuitiver Zauberer, -
+			SA_680 = Meistertalent, -
+
+			Holy:
+			SA_682 = Rondra, MU
+			SA_683 = Boron, MU
+			SA_689 = Firun, MU
+			SA_693 = Namenloser, MU
+			SA_696 = Kor, MU
+			SA_698 = Swafnir, MU
+			SA_86 = Praios, KL
+			SA_684 = Hesinde, KL
+			SA_688 = Travia, KL
+			SA_697 = Nandus, KL
+			SA_1049 = Numinor, KL
+			SA_685 = Phex, IN
+			SA_686 = Peraine, IN
+			SA_691 = Ingerimm, IN
+			SA_694 = Aves, IN
+			SA_687 = Efferd, CH
+			SA_690 = Tsa, CH
+			SA_692 = Rahja, CH
+			SA_695 = Ifirn, CH
+			*/
 		}
 
 		private void ItemsToChar(JProperty belongings, Char charToAdd)
@@ -247,7 +350,7 @@ namespace JsonAnalyzer
 			settings.Char = AllChars.ToList();
 			settings.Selected = SelectedCharName;
 
-			settings.ToSave(settings);
+			settings.ToSave();
 		}
 
 

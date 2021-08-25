@@ -35,5 +35,17 @@ namespace JsonAnalyzer.Properties {
                 this["SavedResource"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("OK: 12")]
+        public string Stats {
+            get {
+                return ((string)(this["Stats"]));
+            }
+            set {
+                this["Stats"] = value;
+            }
+        }
     }
 }
