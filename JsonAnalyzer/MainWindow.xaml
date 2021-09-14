@@ -6,7 +6,7 @@
 		xmlns:sync="http://schemas.syncfusion.com/wpf"
         xmlns:local="clr-namespace:JsonAnalyzer"
         mc:Ignorable="d"
-        Title="DSA Easy Management" MinHeight="215" MinWidth="500" Topmost="{Binding TopMost}" SizeToContent="WidthAndHeight">
+        Title="DSA Easy Life Management" MinHeight="215" MinWidth="500" Topmost="{Binding TopMost}" SizeToContent="WidthAndHeight">
 	<Window.Resources>
 		<local:ArmorConverter x:Key="ArmorConverter"/>
         <local:EncumbConverter x:Key="EncumbConverter"/>
