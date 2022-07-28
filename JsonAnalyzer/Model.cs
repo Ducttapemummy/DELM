@@ -54,7 +54,7 @@ namespace JsonAnalyzer
 			Char CharToAdd = new Char();
 			List<Char> ToDelete = new List<Char>();
 			OpenFileDialog openFileDialog = new OpenFileDialog();
-			openFileDialog.Filter = "json Files (*.json)|*.json|All files (*.*)|*.*";
+			openFileDialog.Filter = "json Files (*.json)|*.json|All files (*.*)|*.*";//lets you open json files and all files
 			if (openFileDialog.ShowDialog() == true)
 			{
 				JObject jobj = JObject.Parse(File.ReadAllText(openFileDialog.FileName));
@@ -62,25 +62,25 @@ namespace JsonAnalyzer
 				{
 					switch (child.Name)
 					{
-						case "name":
+						case "name":	//Get Name
 							CharToAdd.Name = (string)child.Value;
 							break;
-						case "r":
+						case "r":		//Get Race
 							CharToAdd.Race = (Race)Convert.ToInt32(child.Value.ToString().Trim('R','_'));
 							GetRaceLep(CharToAdd);
 							break;
-						case "attr":
+						case "attr":	//Get Attributes
 							AttributesToChar(child, CharToAdd);
 							break;
-						case "activatable":
+						case "activatable":	//Get advantages, disadvantages and traditions
 							ActivatablesToChar(child, CharToAdd);
 							break;
-						case "belongings":
+						case "belongings":	//Get Items
 							ItemsToChar(child, CharToAdd);
 							break;
 					}
 				}
-				CharToAdd.Asp.Current = CharToAdd.Asp.Max;
+				CharToAdd.Asp.Current = CharToAdd.Asp.Max;	//Set current values to max, as char is full health  and co.
 				CharToAdd.Kap.Current = CharToAdd.Kap.Max;
 				CharToAdd.Lep.Current = CharToAdd.Lep.Max;
 
@@ -128,43 +128,43 @@ namespace JsonAnalyzer
 			}
 		}
 
-        private void GetAttributevalues(JProperty jprop, Char charToAdd)
+        private void GetAttributevalues(JProperty jprop, Char charToAdd) //Gets the 8 basic attributes
         {
             foreach(JObject obj in jprop.First.Children())
             {
 				switch(obj["id"].ToString())
                 {
 					case "ATTR_1":
-						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.MU, Value = (int)obj["value"] });
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.MU, Value = (int)obj["value"] });	//Get Courage
 						break;
 					case "ATTR_2":
-						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.KL, Value = (int)obj["value"] });
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.KL, Value = (int)obj["value"] });	//Get Wisdom
 						break;
 					case "ATTR_3":
-						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.IN, Value = (int)obj["value"] });
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.IN, Value = (int)obj["value"] });	//Get Intuition
 						break;
 					case "ATTR_4":
-						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.CH, Value = (int)obj["value"] });
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.CH, Value = (int)obj["value"] });	//Get Charisma
 						break;
 					case "ATTR_5":
-						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.FF, Value = (int)obj["value"] });
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.FF, Value = (int)obj["value"] });	//Get Sleight of Hand
 						break;
 					case "ATTR_6":
-						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.GE, Value = (int)obj["value"] });
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.GE, Value = (int)obj["value"] });	//Get Acrobatics
 						break;
 					case "ATTR_7":
-						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.KO, Value = (int)obj["value"] });
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.KO, Value = (int)obj["value"] });	//Get Constitution
 						charToAdd.Lep.Max += ((int)obj["value"]) * 2;   //Life
 						charToAdd.Lep.Min -= ((int)obj["value"]);		//Min. life  = -KO
 						break;
 					case "ATTR_8":
-						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.KK, Value = (int)obj["value"] });
+						charToAdd.Attributes.Add(new Attributes { ID = AttributeID.KK, Value = (int)obj["value"] });	//Get Strength
 						break;
 				}
             }
 		}
 
-		private void ActivatablesToChar(JProperty jprop, Char charToAdd)
+		private void ActivatablesToChar(JProperty jprop, Char charToAdd)//Check for (dis-)advantages that affect LeP,AsP or  KaP
 		{
 			foreach(JProperty activatable in jprop.First.Children())
             {
@@ -207,7 +207,7 @@ namespace JsonAnalyzer
             }
 		}
 
-		private void GetRaceLep(Char charToAdd)
+		private void GetRaceLep(Char charToAdd) //Get Race and change LeP accordingly
 		{
 			switch(charToAdd.Race)
             {
@@ -224,6 +224,11 @@ namespace JsonAnalyzer
             }
 		}
 
+		/// <summary>
+		/// CHecks a (dis-)advantege for magic and holy traditions, as this affects ASP or KAP
+		/// </summary>
+		/// <param name="charToAdd">Character in question</param>
+		/// <param name="activatable">(dis-)advatage to check</param>
 		private void TryForTradition(Char charToAdd,JProperty activatable)
 		{
 			switch(activatable.Name)
@@ -329,7 +334,7 @@ namespace JsonAnalyzer
 					{
 						foreach (JProperty prop in item.First.Children())
 						{
-							if (prop.Name == "armorType")
+							if (prop.Name == "armorType") //gets armor items and saves them for later use
 							{
 								Armor = item;
 								break;
@@ -344,11 +349,11 @@ namespace JsonAnalyzer
 						{
 							if (prop.Name == "enc")
 							{
-								charToAdd.Enc.Current = (int)prop.Value;
+								charToAdd.Enc.Current = (int)prop.Value;//Gets weight of the armor
 							}
 							else if (prop.Name == "pro")
 							{
-								charToAdd.Arm.Current = (int)prop.Value;
+								charToAdd.Arm.Current = (int)prop.Value; //Gets Armor class (protection) of the armor
 							}
 						}
 					}
@@ -360,16 +365,16 @@ namespace JsonAnalyzer
 						if(coin.Value.ToString() != String.Empty)
 						switch(coin.Name)
 						{
-							case "d":
+							case "d"://Dukaten
 								charToAdd.Mon.D = (int)coin.Value;
 								break;
-							case "s":
+							case "s"://Silber
 								charToAdd.Mon.S = (int)coin.Value;
 								break;
-							case "h":
+							case "h"://Heller
 								charToAdd.Mon.H = (int)coin.Value;
 								break;
-							case "k":
+							case "k"://Kreuzer
 								charToAdd.Mon.K = (int)coin.Value;
 								break;
 						}
@@ -379,7 +384,7 @@ namespace JsonAnalyzer
 		}
 
 		public void DoClosingStuff(object sender, System.ComponentModel.CancelEventArgs e)
-		{
+		{//Save all chars and current selected char
 			settings.Char = AllChars.ToList();
 			settings.Selected = SelectedCharName;
 
@@ -410,10 +415,10 @@ namespace JsonAnalyzer
 	}
 	public enum Race
 	{
-		Human = 1,		//Le = 5 //1
-		Elf = 2,		//Le = 2 //2
-		Half_Elf = 3,	//Le = 5 //3
-		Dwarf = 4		//Le = 8 //4
+		Human = 1,		//Le Base Modifier = 5 //1
+		Elf = 2,        //Le Base Modifier = 2 //2
+		Half_Elf = 3,   //Le Base Modifier = 5 //3
+		Dwarf = 4       //Le Base Modifier = 8 //4
 	}
 
 	public enum AttributeID
